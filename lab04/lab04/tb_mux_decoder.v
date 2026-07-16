@@ -1,0 +1,51 @@
+`timescale 1ns / 1ps
+
+module tb_mux_decoder;
+    reg [3:0] data;
+    reg [1:0] sel;
+    reg enable;
+    wire mux_y;
+    wire [3:0] dec_y;
+    reg [7:0] data8;
+    reg [2:0] sel8;
+    wire mux8_y;
+
+    integer i;
+
+    mux4to1 mux (.data(data), .sel(sel), .y(mux_y));
+    decoder2to4 dec (.sel(sel), .enable(enable), .y(dec_y));
+    mux8 mux8_inst (.data8(data8), .sel8(sel8), .mux8_y(mux8_y));
+
+    initial begin
+        $dumpfile("lab04_mux_decoder.vcd");
+        $dumpvars(0, tb_mux_decoder);
+
+        data = 4'b1010;
+        enable = 1'b1;
+
+        $display("data sel enable | mux_y dec_y");
+        for (i = 0; i < 4; i = i + 1) begin
+            sel = i[1:0];
+            #10;
+            $display("%b  %b    %b    |   %b   %b", data, sel, enable, mux_y, dec_y);
+        end
+
+        enable = 1'b0;
+        for (i = 0; i < 4; i = i + 1) begin
+            sel = i[1:0];
+            #10;
+            $display("%b  %b    %b    |   %b   %b", data, sel, enable, mux_y, dec_y);
+        end
+
+        data8 = 8'b10110101;
+        $display("");
+        $display("data8   sel8 | mux8_y");
+        for (i = 0; i < 8; i = i + 1) begin
+            sel8 = i[2:0];
+            #10;
+            $display("%b  %b   |    %b", data8, sel8, mux8_y);
+        end
+
+        $finish;
+    end
+endmodule
